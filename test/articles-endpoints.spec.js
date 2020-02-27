@@ -73,6 +73,7 @@ describe.only("Articles endpoints", function() {
 
   describe.only(`POST /articles`, () => {
     it("creates an article, responding with 201 and the new article", function() {
+      this.retries(3);
       const newArticle = {
         title: "Test new article",
         style: "Listicle",
@@ -88,6 +89,10 @@ describe.only("Articles endpoints", function() {
           expect(res.body.style).to.eql(newArticle.style);
           expect(res.body.content).to.eql(newArticle.content);
           expect(res.body).to.have.property("id");
+          expect(res.headers.location).to.eql(`/articles/${res.body.id}`);
+          const expected = new Date().toLocaleString;
+          const actual = new Date(res.body.date_published).toLocaleString;
+          expect(actual).to.eql(expected);
         })
         .then(postRes =>
           supertest(app)
