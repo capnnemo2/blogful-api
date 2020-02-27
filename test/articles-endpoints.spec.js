@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
 
-describe("Articles endpoints", function() {
+describe.only("Articles endpoints", function() {
   let db;
 
   before("makeknex instance", () => {
@@ -10,6 +10,7 @@ describe("Articles endpoints", function() {
       client: "pg",
       connection: process.env.TEST_DB_URL
     });
+    app.set("db", db);
   });
 
   after("disconnect from db", () => db.destroy());
@@ -54,6 +55,12 @@ describe("Articles endpoints", function() {
 
     this.beforeEach("insert articles", () => {
       return db.into("blogful_articles").insert(testArticles);
+    });
+
+    it("GET /articles responds with 200 and all of the articles", () => {
+      return supertest(app)
+        .get("/articles")
+        .expect(200, testArticles);
     });
   });
 });
