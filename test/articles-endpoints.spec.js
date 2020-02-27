@@ -88,7 +88,12 @@ describe.only("Articles endpoints", function() {
           expect(res.body.style).to.eql(newArticle.style);
           expect(res.body.content).to.eql(newArticle.content);
           expect(res.body).to.have.property("id");
-        });
+        })
+        .then(postRes =>
+          supertest(app)
+            .get(`/articles/${postRes.body.id}`)
+            .expect(postRes.body)
+        );
     });
   });
 });
