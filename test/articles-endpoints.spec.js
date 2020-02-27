@@ -21,7 +21,9 @@ describe.only("Articles endpoints", function() {
   afterEach("cleanup", () => db("blogful_articles").truncate());
 
   context("Given there are articles in the database", () => {
-    this.beforeEach("insert articles", () => {
+    const testArticles = makeArticlesArray();
+
+    beforeEach("insert articles", () => {
       return db.into("blogful_articles").insert(testArticles);
     });
 
