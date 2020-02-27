@@ -6,7 +6,7 @@ const { makeArticlesArray } = require("./articles.fixtures");
 describe.only("Articles endpoints", function() {
   let db;
 
-  before("makeknex instance", () => {
+  before("make knex instance", () => {
     db = knex({
       client: "pg",
       connection: process.env.TEST_DB_URL
@@ -68,6 +68,27 @@ describe.only("Articles endpoints", function() {
           .get(`/articles/${articleId}`)
           .expect(200, expectedArticle);
       });
+    });
+  });
+
+  describe.only(`POST /articles`, () => {
+    it("creates an article, responding with 201 and the new article", function() {
+      const newArticle = {
+        title: "Test new article",
+        style: "Listicle",
+        content: "Test new article content"
+      };
+
+      return supertest(app)
+        .post("/articles")
+        .send(newArticle)
+        .expect(201)
+        .expect(res => {
+          expect(res.body.title).to.eql(newArticle.title);
+          expect(res.body.style).to.eql(newArticle.style);
+          expect(res.body.content).to.eql(newArticle.content);
+          expect(res.body).to.have.property("id");
+        });
     });
   });
 });
