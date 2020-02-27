@@ -6,7 +6,7 @@ const jsonParser = express.json();
 
 articlesRouter
   .route("/")
-  .get("/articles", (req, res, next) => {
+  .get((req, res, next) => {
     const knexInstance = req.app.get("db");
     ArticlesService.getAllArticles(knexInstance)
       .then(articles => {
@@ -14,7 +14,7 @@ articlesRouter
       })
       .catch(next);
   })
-  .post("/articles", jsonParser, (req, res, next) => {
+  .post(jsonParser, (req, res, next) => {
     const { title, content, style } = req.body;
     const newArticle = { title, content, style };
     ArticlesService.insertArticle(req.app.get("db"), newArticle)
@@ -27,20 +27,18 @@ articlesRouter
       .catch(next);
   });
 
-articlesRouter
-  .route("/:article_id")
-  .get("/articles/:article_id", (req, res, next) => {
-    const knexInstance = req.app.get("db");
-    ArticlesService.getById(knexInstance, req.params.article_id)
-      .then(article => {
-        if (!article) {
-          return res
-            .status(404)
-            .json({ error: { message: `Article doesn't exist` } });
-        }
-        res.json(article);
-      })
-      .catch(next);
-  });
+articlesRouter.route("/:article_id").get((req, res, next) => {
+  const knexInstance = req.app.get("db");
+  ArticlesService.getById(knexInstance, req.params.article_id)
+    .then(article => {
+      if (!article) {
+        return res
+          .status(404)
+          .json({ error: { message: `Article doesn't exist` } });
+      }
+      res.json(article);
+    })
+    .catch(next);
+});
 
 module.exports = articlesRouter;
