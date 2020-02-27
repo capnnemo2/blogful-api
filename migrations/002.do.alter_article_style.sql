@@ -1,6 +1,6 @@
 CREATE TYPE article_category AS ENUM (
     'Listicle',
-    'How-To',
+    'How-to',
     'News',
     'Interview',
     'Story'
