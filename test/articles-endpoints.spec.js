@@ -173,7 +173,7 @@ describe("Articles endpoints", function() {
     });
   });
 
-  describe.only(`DELETE /articles/:article_id`, () => {
+  describe(`DELETE /articles/:article_id`, () => {
     context("Given there are no articles in the database", () => {
       it(`responds with 404`, () => {
         const articleId = 123456;
