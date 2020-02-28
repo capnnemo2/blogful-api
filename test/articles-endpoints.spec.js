@@ -1,7 +1,10 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
-const { makeArticlesArray } = require("./articles.fixtures");
+const {
+  makeArticlesArray,
+  makeMaliciousArticle
+} = require("./articles.fixtures");
 
 describe("Articles endpoints", function() {
   let db;
@@ -42,9 +45,27 @@ describe("Articles endpoints", function() {
           .expect(200, testArticles);
       });
     });
+
+    context("Given an XSS attack article", () => {
+      const { maliciousArticle, expectedArticle } = makeMaliciousArticle();
+
+      beforeEach("insert malicious article", () => {
+        return db.into("blogful_articles").insert([maliciousArticle]);
+      });
+
+      it("removes XSS attack content", () => {
+        return supertest(app)
+          .get(`/articles`)
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0].title).to.eql(expectedArticle.title);
+            expect(res.body[0].content).to.eql(expectedArticle.content);
+          });
+      });
+    });
   });
 
-  describe.only("GET /articles/:article_id", () => {
+  describe("GET /articles/:article_id", () => {
     context("Given no articles", () => {
       it("responds with 404", () => {
         const articleId = 123456;
@@ -55,12 +76,7 @@ describe("Articles endpoints", function() {
     });
 
     context("Given an XSS attack article", () => {
-      const maliciousArticle = {
-        id: 911,
-        title: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        style: "How-to",
-        content: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`
-      };
+      const { maliciousArticle, expectedArticle } = makeMaliciousArticle();
 
       beforeEach("insert malicious article", () => {
         return db.into("blogful_articles").insert([maliciousArticle]);
@@ -71,12 +87,8 @@ describe("Articles endpoints", function() {
           .get(`/articles/${maliciousArticle.id}`)
           .expect(200)
           .expect(res => {
-            expect(res.body.title).to.eql(
-              'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
-            );
-            expect(res.body.content).to.eql(
-              `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
-            );
+            expect(res.body.title).to.eql(expectedArticle.title);
+            expect(res.body.content).to.eql(expectedArticle.content);
           });
       });
     });
@@ -146,6 +158,18 @@ describe("Articles endpoints", function() {
             error: { message: `Missing '${field}' in request body` }
           });
       });
+    });
+
+    it("removes XSS attack content from response", () => {
+      const { maliciousArticle, expectedArticle } = makeMaliciousArticle();
+      return supertest(app)
+        .post(`/articles`)
+        .send(maliciousArticle)
+        .expect(201)
+        .expect(res => {
+          expect(res.body.title).to.eql(expectedArticle.title);
+          expect(res.body.content).to.eql(expectedArticle.content);
+        });
     });
   });
 });
