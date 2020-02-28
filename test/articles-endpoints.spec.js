@@ -174,6 +174,15 @@ describe("Articles endpoints", function() {
   });
 
   describe.only(`DELETE /articles/:article_id`, () => {
+    context("Given there are no articles in the database", () => {
+      it(`responds with 404`, () => {
+        const articleId = 123456;
+        return supertest(app)
+          .delete(`/articles/${articleId}`)
+          .expect(404, { error: { message: `Article doesn't exist` } });
+      });
+    });
+
     context("Given there are articles in the database", () => {
       const testArticles = makeArticlesArray();
 
