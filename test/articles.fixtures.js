@@ -44,9 +44,10 @@ function makeMaliciousArticle() {
   };
 
   const expectedArticle = {
-    ...maliciousArticle,
+    id: 911,
     title:
       'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
+    style: "How-to",
     content: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
   };
   return maliciousArticle, expectedArticle;
