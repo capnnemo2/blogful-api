@@ -75,6 +75,18 @@ articlesRouter
     const { title, content, style } = req.body;
     const articleToUpdate = { title, content, style };
 
+    const numberOfValues = Object.values(articleToUpdate).filter(Boolean)
+      .length;
+    if (numberOfValues === 0) {
+      return res
+        .status(400)
+        .json({
+          error: {
+            message: `Request body must contain either 'title', 'style', or 'content'`
+          }
+        });
+    }
+
     ArticlesService.updateArticle(
       req.app.get("db"),
       req.params.article_id,
