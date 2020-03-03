@@ -208,7 +208,7 @@ describe("Articles endpoints", function() {
     });
   });
 
-  describe.only(`PATCH /api/articles/:articles_id`, () => {
+  describe(`PATCH /api/articles/:articles_id`, () => {
     context("Given no articles", () => {
       it(`responds with 404`, () => {
         const articleId = 1234567;
@@ -232,10 +232,19 @@ describe("Articles endpoints", function() {
           style: "Interview",
           content: "updated article content"
         };
+        const expectedArticle = {
+          ...testArticles[idToUpdate - 1],
+          ...updateArticle
+        };
         return supertest(app)
           .patch(`/api/articles/${idToUpdate}`)
           .send(updateArticle)
-          .expect(204);
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/articles/${idToUpdate}`)
+              .expect(expectedArticle)
+          );
       });
     });
   });

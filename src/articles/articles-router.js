@@ -62,11 +62,25 @@ articlesRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.json(serializeArticle(article));
+    res.json(serializeArticle(res.article));
   })
   .delete((req, res, next) => {
     ArticlesService.deleteArticle(req.app.get("db"), req.params.article_id)
       .then(() => {
+        res.status(204).end();
+      })
+      .catch(next);
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { title, content, style } = req.body;
+    const articleToUpdate = { title, content, style };
+
+    ArticlesService.updateArticle(
+      req.app.get("db"),
+      req.params.article_id,
+      articleToUpdate
+    )
+      .then(numRowsAffected => {
         res.status(204).end();
       })
       .catch(next);
