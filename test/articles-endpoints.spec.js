@@ -247,7 +247,7 @@ describe("Articles endpoints", function() {
           );
       });
 
-      it(`responds wwith 400 when no required fields supplied`, () => {
+      it(`responds with 400 when no required fields supplied`, () => {
         const idToUpdate = 2;
         return supertest(app)
           .patch(`/api/articles/${idToUpdate}`)
