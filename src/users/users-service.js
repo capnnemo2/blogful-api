@@ -24,7 +24,7 @@ const UsersService = {
   deleteUser(knex, id) {
     return knex("blogful_users")
       .where({ id })
-      .first();
+      .delete();
   },
 
   updateUser(knex, id, newUserFields) {
