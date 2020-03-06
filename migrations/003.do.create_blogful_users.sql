@@ -9,6 +9,6 @@ CREATE TABLE blogful_users (
 
 ALTER TABLE blogful_articles
     ADD COLUMN
-        auther INTEGER REFERENCES blogful_users(id)
+        author INTEGER REFERENCES blogful_users(id)
         ON DELETE SET NULL;
 
