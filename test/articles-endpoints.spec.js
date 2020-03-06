@@ -5,6 +5,7 @@ const {
   makeArticlesArray,
   makeMaliciousArticle
 } = require("./articles.fixtures");
+const { makeUsersArray } = require("./users/fixtures");
 
 describe("Articles endpoints", function() {
   let db;
